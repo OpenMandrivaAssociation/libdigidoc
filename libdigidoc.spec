@@ -17,6 +17,7 @@ License: GPL
 Group: System/Libraries
 URL: http://sourceforge.net/projects/gdigidoc/
 Source: http://heanet.dl.sourceforge.net/sourceforge/gdigidoc/%{name}-%{version}.tar.bz2
+BuildRoot: %{_tmppath}/%{name}-buildroot
 
 BuildRequires: pkgconfig openssl-devel libxml2-devel
 
