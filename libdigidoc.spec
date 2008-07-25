@@ -1,6 +1,6 @@
 %define	name	libdigidoc
 %define	version	2.2.11
-%define	release	%mkrel 1
+%define	release	%mkrel 3
 
 %define realname digidoc
 
