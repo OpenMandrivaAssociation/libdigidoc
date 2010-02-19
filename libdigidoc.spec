@@ -6,8 +6,7 @@
 
 %define major 2
 %define libname %mklibname %{realname} %major
-%define libnamedev %mklibname %{realname} %major -d
-
+%define libnamedev %mklibname %{realname} -d
 
 Summary: Generic library implementing the XAdES digital signature standard
 Name: %{name}
@@ -17,6 +16,7 @@ License: GPL
 Group: System/Libraries
 URL: http://sourceforge.net/projects/gdigidoc/
 Source: http://heanet.dl.sourceforge.net/sourceforge/gdigidoc/%{name}-%{version}.tar.bz2
+Patch0: libdigidoc-2.2.11-link.patch
 BuildRoot: %{_tmppath}/%{name}-buildroot
 
 BuildRequires: pkgconfig openssl-devel libxml2-devel
@@ -43,8 +43,9 @@ on all platforms and CSP on win32.
 Summary: Libdigidoc library headers and development libraries
 Group: Development/Other
 Requires: %{libname} = %{version}
-Provides: lib%{name}-devel = %{version}
+Provides: %{name}-devel = %{version}-%{release}
 Provides: libdigidoc-devel
+Obsoletes: %{_lib}digidoc2-devel < %{version}-%{release}
 
 %description -n %{libnamedev}
 DigiDoc is a generic library implementing the XAdES digital signature standard.
@@ -52,20 +53,17 @@ It allows to create, sign, verify, and modify digidoc XML containers. Support
 for doing hardware cryptographic signing operations is provided via PKCS#11
 on all platforms and CSP on win32.
 
-
 %prep
-rm -rf $RPM_BUILD_ROOT
-
 %setup -q -n %name-%{version}
+%patch0 -p0
 
 %build
-
-%configure  
-
+autoreconf -fi
+%configure2_5x 
 make
 
 %install
-
+rm -fr %buildroot
 %makeinstall_std
 
 %if %mdkversion < 200900
