@@ -1,6 +1,6 @@
 %define	name	libdigidoc
 %define	version	2.2.11
-%define	release	%mkrel 4
+%define	release	%mkrel 5
 
 %define realname digidoc
 
@@ -17,6 +17,7 @@ Group: System/Libraries
 URL: http://sourceforge.net/projects/gdigidoc/
 Source: http://heanet.dl.sourceforge.net/sourceforge/gdigidoc/%{name}-%{version}.tar.bz2
 Patch0: libdigidoc-2.2.11-link.patch
+Patch1: libdigidoc-2.2.11-openssl-1.0.patch
 BuildRoot: %{_tmppath}/%{name}-buildroot
 
 BuildRequires: pkgconfig openssl-devel libxml2-devel
@@ -56,6 +57,7 @@ on all platforms and CSP on win32.
 %prep
 %setup -q -n %name-%{version}
 %patch0 -p0
+%patch1 -p0
 
 %build
 autoreconf -fi
