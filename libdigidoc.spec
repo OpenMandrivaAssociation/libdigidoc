@@ -1,96 +1,95 @@
-%define	name	libdigidoc
-%define	version	2.2.11
-%define	release	%mkrel 5
+%define name	libdigidoc
+%define version	2.7.0
+%define release %mkrel 1
 
 %define realname digidoc
 
 %define major 2
 %define libname %mklibname %{realname} %major
-%define libnamedev %mklibname %{realname} -d
+%define develname %mklibname %{realname} -d
 
-Summary: Generic library implementing the XAdES digital signature standard
-Name: %{name}
-Version: %{version}
-Release: %{release}
-License: GPL
-Group: System/Libraries
-URL: http://sourceforge.net/projects/gdigidoc/
-Source: http://heanet.dl.sourceforge.net/sourceforge/gdigidoc/%{name}-%{version}.tar.bz2
-Patch0: libdigidoc-2.2.11-link.patch
-Patch1: libdigidoc-2.2.11-openssl-1.0.patch
-BuildRoot: %{_tmppath}/%{name}-buildroot
+Name:		%{name}
+Version:	%{version}
+Release:	%{release}
+Summary:	Library for handling digitally signed documents
 
-BuildRequires: pkgconfig openssl-devel libxml2-devel
+Group:		System/Libraries
+License:	LGPLv2+
+URL:		http://code.google.com/p/esteid
+Source:		http://esteid.googlecode.com/files/%{name}-%{version}.tar.bz2
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildRequires:	cmake
+BuildRequires:	libxml2-devel
+BuildRequires:	openssl-devel
+BuildRequires:	zlib-devel
+Requires:	opensc
 
 %description
-DigiDoc is a generic library implementing the XAdES digital signature standard.
-It allows to create, sign, verify, and modify digidoc XML containers. Support
-for doing hardware cryptographic signing operations is provided via PKCS#11
-on all platforms and CSP on win32.
+libDigiDoc is a library implementing a subset of the XAdES digital
+signature standard on top of Estonian specific .ddoc container format.
+It allows to create, sign, verify, and modify digidoc XML containers.
 
-%package -n %{libname}
-Summary: Generic library implementing the XAdES digital signature standard
-Group: Development/Other
-Provides: lib%{name} = %{version}
+%package	-n %{libname}
+Group:		System/Libraries
+Summary:	Library for handling digitally signed documents
+Provides:	%name = %version-%release
 
-%description -n %{libname}
-DigiDoc is a generic library implementing the XAdES digital signature standard.
-It allows to create, sign, verify, and modify digidoc XML containers. Support
-for doing hardware cryptographic signing operations is provided via PKCS#11
-on all platforms and CSP on win32.
+%description	-n %{libname}
+This package contains libraries and header files for
+developing applications that use %{name}.
 
 
-%package -n %{libnamedev}
-Summary: Libdigidoc library headers and development libraries
-Group: Development/Other
-Requires: %{libname} = %{version}
-Provides: %{name}-devel = %{version}-%{release}
-Provides: libdigidoc-devel
-Obsoletes: %{_lib}digidoc2-devel < %{version}-%{release}
+%package	-n %{develname}
+Summary:	Development files for %{name}
+Group:		Development/Libraries
+Requires:	%{libname} = %{version}-%{release}
+Requires:	libxml2-devel
+Requires:	openssl-devel
+Requires:	zlib-devel
+Requires:	pkgconfig
+Provides:	%{name}-devel = %{version}-%{release}
 
-%description -n %{libnamedev}
-DigiDoc is a generic library implementing the XAdES digital signature standard.
-It allows to create, sign, verify, and modify digidoc XML containers. Support
-for doing hardware cryptographic signing operations is provided via PKCS#11
-on all platforms and CSP on win32.
+%description	-n %{develname}
+This package contains libraries and header files for
+developing applications that use %{libname}.
+
 
 %prep
-%setup -q -n %name-%{version}
-%patch0 -p0
-%patch1 -p0
+%setup -q
 
 %build
-autoreconf -fi
-%configure2_5x 
-make
+mkdir -p %{_target_platform}
+pushd %{_target_platform}
+%{cmake} ../..
+popd
+
+make %{?_smp_mflags} -C %{_target_platform}/build
+
 
 %install
-rm -fr %buildroot
-%makeinstall_std
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT -C %{_target_platform}/build
 
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post -n %{libname} -p /sbin/ldconfig
+
+%postun -n %{libname} -p /sbin/ldconfig
+
+
 %files -n %{libname}
-%defattr(-,root,root)
+%defattr(-,root,root,-)
+%config %{_sysconfdir}/digidoc.conf
+%{_bindir}/cdigidoc
 %{_libdir}/*.so.*
-%config(noreplace) %_sysconfdir/*.conf
-%_datadir/libdigidoc
+%{_datadir}/libdigidoc/
+%doc AUTHORS COPYING ChangeLog README
 
-%files -n %{libnamedev}
-%defattr(-,root,root)
+%files -n %{develname}
+%defattr(-,root,root,-)
+%{_includedir}/libdigidoc/
+%{_libdir}/pkgconfig/lib*.pc
 %{_libdir}/*.so
-%{_libdir}/*.a
-%{_libdir}/*.la
-%_libdir/pkgconfig/*.pc
-%{_includedir}/*
-%{_bindir}/*
-
