@@ -42,7 +42,7 @@ developing applications that use %{name}.
 
 %package	-n %{develname}
 Summary:	Development files for %{name}
-Group:		Development/Libraries
+Group:		Development/Other
 Requires:	%{libname} = %{version}-%{release}
 Requires:	libxml2-devel
 Requires:	openssl-devel
