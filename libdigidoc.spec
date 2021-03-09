@@ -1,28 +1,24 @@
-%define name	libdigidoc
-%define version	2.7.0
-%define release 2
-
 %define realname digidoc
 
 %define major 2
 %define libname %mklibname %{realname} %major
 %define develname %mklibname %{realname} -d
 
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
+Name:		libdigidoc
+Version:	3.10.5
+Release:	1
 Summary:	Library for handling digitally signed documents
 
 Group:		System/Libraries
 License:	LGPLv2+
-URL:		http://code.google.com/p/esteid
-Source:		http://esteid.googlecode.com/files/%{name}-%{version}.tar.bz2
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+URL:		https://github.com/open-eid/libdigidoc/
+Source:		https://github.com/open-eid/libdigidoc/releases/download/v%{version}/libdigidoc-%{version}.tar.gz
 
 BuildRequires:	cmake
-BuildRequires:	libxml2-devel
-BuildRequires:	openssl-devel
-BuildRequires:	zlib-devel
+BuildRequires:	doxygen
+BuildRequires:	pkgconfig(libxml-2.0)
+BuildRequires:	pkgconfig(openssl)
+BuildRequires:	pkgconfig(zlib)
 Requires:	opensc
 
 %description
@@ -59,17 +55,15 @@ developing applications that use %{libname}.
 %setup -q
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-%{cmake} ../..
-popd
 
-make %{?_smp_mflags} -C %{_target_platform}/build
+%cmake
+
+%make_build
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT -C %{_target_platform}/build
+
+%make_install -C build
 
 
 %clean
@@ -146,7 +140,7 @@ rm -rf $RPM_BUILD_ROOT
 - 2.2.11
 - buildrequires openssl-devel libxml2-devel
 
-* Mon Nov 07 2005 Nicolas Lécureuil <neoclust@mandriva.org> 2.1.21-2mdk
+* Mon Nov 07 2005 Nicolas LÃ©cureuil <neoclust@mandriva.org> 2.1.21-2mdk
 - Fix BuildRequires
 - %%mkrel 
 
