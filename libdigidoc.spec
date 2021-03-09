@@ -55,7 +55,8 @@ developing applications that use %{libname}.
 %setup -q
 
 %build
-
+export CC=gcc
+export CXX=g++
 %cmake
 
 %make_build
